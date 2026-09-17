@@ -1,0 +1,32 @@
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: mini-leboncoin-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public:/var/www/html
+      - ./src:/var/www/src
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mini-leboncoin-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: leboncoin
+      MYSQL_USER: leboncoin
+      MYSQL_PASSWORD: leboncoin_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:
