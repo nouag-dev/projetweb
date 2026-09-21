@@ -4,9 +4,8 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    container_name: mini-leboncoin-web
     ports:
-      - "8080:80"
+        - "8081:80"
     volumes:
       - ./public:/var/www/html
       - ./src:/var/www/src
@@ -20,7 +19,6 @@ services:
 
   db:
     image: postgres:16
-    container_name: mini-leboncoin-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: campus_app
