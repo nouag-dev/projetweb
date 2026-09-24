@@ -81,8 +81,8 @@ function iconForCategory(?string $icon): string
         </nav>
         <div class="header-actions">
             <?php if ($user !== null): ?>
-                <a class="profile-link" href="/profil.php"><?= e($user['prenom']) ?></a>
                 <a class="sell-button" href="/creer-annonce.php">+ Déposer une annonce</a>
+                <?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
             <?php else: ?>
                 <a class="nav-link" href="/connexion.php">Se connecter</a>
                 <a class="sell-button" href="/connexion.php?redirect=/creer-annonce.php">+ Déposer une annonce</a>

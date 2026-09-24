@@ -43,7 +43,7 @@ $conversations = $conversationStmt->fetchAll();
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Mon profil | Campus</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
-    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><a class="nav-link active" href="/profil.php">Mon profil</a><a class="logout-link" href="/deconnexion.php">Se déconnecter</a></nav></header>
+    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav></header>
     <main class="profile-layout">
         <?php if (isset($_GET['created'])): ?><div class="success-message">Ton compte a bien été créé.</div><?php elseif (isset($_GET['published'])): ?><div class="success-message">Ton annonce a bien été publiée.</div><?php endif; ?>
         <section class="profile-header"><div class="avatar"><?= e(strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1))) ?></div><div><p class="eyebrow">Mon espace</p><h1><?= e($user['prenom'] . ' ' . $user['nom']) ?></h1><p class="profile-email"><?= e($user['email']) ?></p></div><a class="primary-button compact-button" href="/creer-annonce.php">+ Déposer une annonce</a></section>

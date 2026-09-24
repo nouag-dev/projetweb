@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Déposer une annonce | Campus</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
-    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/profil.php">Mon profil</a><a class="logout-link" href="/deconnexion.php">Se déconnecter</a></nav></header>
+    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav></header>
     <main class="form-page"><section class="form-panel listing-form-panel"><p class="eyebrow">Faire circuler un objet</p><h1>Déposer une annonce</h1><p class="form-lead">Donne quelques détails pour aider les autres étudiants à se décider.</p>
         <?php if ($errors !== []): ?><div class="form-errors"><?php foreach ($errors as $error): ?><p><?= e($error) ?></p><?php endforeach; ?></div><?php endif; ?>
         <form method="post" enctype="multipart/form-data" class="stack-form">
