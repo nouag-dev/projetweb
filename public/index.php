@@ -75,8 +75,9 @@ function iconForCategory(?string $icon): string
             <span>campus<span class="brand-dot">.</span></span>
         </a>
         <nav class="main-nav" aria-label="Navigation principale">
-            <a class="nav-link active" href="/">Explorer</a>
+            <a class="nav-link active" href="/">Accueil</a>
             <a class="nav-link" href="#categories">Catégories</a>
+            <a class="nav-link" href="/decouvrir.php">Explorer</a>
         </nav>
         <div class="header-actions">
             <?php if ($user !== null): ?>

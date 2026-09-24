@@ -132,7 +132,7 @@ if ($conversationId !== null) {
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Conversation | Campus</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
-    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Explorer</a><a href="/profil.php">Mon profil</a><a class="logout-link" href="/deconnexion.php">Se déconnecter</a></nav></header>
+    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><a href="/profil.php">Mon profil</a><a class="logout-link" href="/deconnexion.php">Se déconnecter</a></nav></header>
     <main class="chat-page">
         <?php if ($error !== null && $announcement === null): ?><div class="empty-state"><h3><?= e($error) ?></h3><a class="outline-button" href="/">Retour aux annonces</a></div>
         <?php elseif ($error !== null && (int) $announcement['vendeur_id'] === (int) $user['id_utilisateur']): ?><div class="empty-state"><h3><?= e($error) ?></h3><a class="outline-button" href="/annonce.php?id=<?= (int) $announcementId ?>">Retour à l'annonce</a></div>

@@ -200,3 +200,31 @@ a { color: inherit; text-decoration: none; }
     .chat-form { align-items: stretch; flex-direction: column; }
     .chat-form button { align-self: flex-end; }
 }
+
+/* Découvrir — cartes swipe */
+.swipe-page { margin: 40px auto 90px; max-width: 480px; padding: 0 24px; display: flex; flex-direction: column; align-items: center; }
+.swipe-heading { text-align: center; margin-bottom: 28px; }
+.swipe-heading h1 { font-size: 34px; font-weight: normal; margin: 8px 0 6px; }
+.swipe-heading p { color: var(--muted); font: 14px Arial, sans-serif; margin: 0; }
+.swipe-stack { position: relative; width: 100%; max-width: 360px; height: 480px; touch-action: none; }
+.swipe-card { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 18px 40px rgba(32,35,33,.14); display: flex; flex-direction: column; overflow: hidden; cursor: grab; user-select: none; will-change: transform; }
+.swipe-card:active { cursor: grabbing; }
+.swipe-card-behind { transform: scale(.94) translateY(14px); opacity: .6; z-index: 1; }
+.swipe-card-top { z-index: 2; }
+.swipe-photo { flex: 1; background: #e6ead7; color: var(--green); display: flex; align-items: center; justify-content: center; font: bold 22px Arial, sans-serif; letter-spacing: 2px; position: relative; overflow: hidden; }
+.swipe-photo img { width: 100%; height: 100%; object-fit: cover; }
+.swipe-badge { position: absolute; top: 14px; font: bold 12px Arial, sans-serif; padding: 6px 13px; border-radius: 999px; }
+.swipe-badge-category { left: 14px; background: rgba(255,255,255,.92); color: var(--ink); }
+.swipe-badge-price { right: 14px; background: var(--green); color: #fff; }
+.swipe-stamp { position: absolute; top: 26px; padding: 8px 18px; border: 3px solid; border-radius: 8px; font: bold 22px Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; opacity: 0; transform: rotate(-18deg); }
+.swipe-stamp-like { left: 20px; color: var(--green); border-color: var(--green); }
+.swipe-stamp-pass { right: 20px; color: #c76648; border-color: #c76648; transform: rotate(18deg); }
+.swipe-info { padding: 16px 18px 18px; }
+.swipe-info h3 { font-size: 21px; font-weight: normal; margin: 0 0 6px; }
+.swipe-meta { color: var(--muted); font: 12px Arial, sans-serif; display: flex; align-items: center; gap: 6px; }
+.swipe-actions { display: flex; align-items: center; justify-content: center; gap: 30px; margin-top: 32px; }
+.swipe-btn { width: 58px; height: 58px; border-radius: 50%; border: 2px solid; background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px; }
+.swipe-btn-pass { border-color: #c76648; color: #c76648; }
+.swipe-btn-like { width: 66px; height: 66px; border: none; background: var(--green); color: #fff; box-shadow: 0 8px 18px rgba(46,91,70,.32); }
+.swipe-empty { text-align: center; padding: 60px 20px; }
+.swipe-empty .empty-icon { color: var(--peach); font-size: 46px; display: block; margin-bottom: 14px; }

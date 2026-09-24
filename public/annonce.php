@@ -38,7 +38,7 @@ if ($announcement === false || $announcement === null) {
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title><?= $announcement ? e($announcement['titre']) . ' | Campus' : 'Annonce introuvable | Campus' ?></title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
-    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Explorer</a><?php if (currentUser()): ?><a href="/profil.php">Mon profil</a><?php else: ?><a href="/connexion.php">Se connecter</a><?php endif; ?></nav></header>
+    <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php if (currentUser()): ?><a href="/profil.php">Mon profil</a><?php else: ?><a href="/connexion.php">Se connecter</a><?php endif; ?></nav></header>
     <main class="detail-page">
         <?php if ($announcement === null): ?>
             <div class="empty-state"><h3>Annonce introuvable</h3><p><?= e($error ?? 'Cette annonce n’existe plus ou a été supprimée.') ?></p><a class="outline-button" href="/">Retour aux annonces</a></div>
