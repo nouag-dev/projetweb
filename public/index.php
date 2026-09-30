@@ -56,6 +56,14 @@ function iconForCategory(?string $icon): string
         'chair' => '▥',
         'shirt' => '◇',
         'hand' => '✦',
+        'sport' => '◎',
+        'computer' => '▧',
+        'music' => '♫',
+        'games' => '◫',
+        'beauty' => '❊',
+        'decor' => '◈',
+        'bike' => '☖',
+        'paper' => '▦',
         default => '•',
     };
 }
@@ -118,14 +126,17 @@ function iconForCategory(?string $icon): string
                 </div>
                 <span class="section-count"><?= count($categories) ?> catégories</span>
             </div>
-            <div class="category-list">
-                <?php foreach ($categories as $category): ?>
-                    <a class="category-item" href="/?category=<?= (int) $category['id_categorie'] ?>">
-                        <span class="category-icon"><?= iconForCategory($category['icone']) ?></span>
-                        <span><?= e($category['nom']) ?></span>
-                        <span class="category-arrow">↗</span>
-                    </a>
-                <?php endforeach; ?>
+            <?php $categoryScrollDuration = max(16, count($categories) * 2.6); ?>
+            <div class="category-scroll">
+                <div class="category-scroll-track" style="animation-duration: <?= $categoryScrollDuration ?>s;">
+                    <?php foreach (array_merge($categories, $categories) as $category): ?>
+                        <a class="category-item" href="/?category=<?= (int) $category['id_categorie'] ?>">
+                            <span class="category-icon"><?= iconForCategory($category['icone']) ?></span>
+                            <span><?= e($category['nom']) ?></span>
+                            <span class="category-arrow">↗</span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </section>
 
