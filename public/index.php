@@ -82,7 +82,7 @@ function iconForCategory(?string $icon): string
         <div class="header-actions">
             <?php if ($user !== null): ?>
                 <a class="sell-button" href="/creer-annonce.php">+ Déposer une annonce</a>
-                <?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
+                <?php include __DIR__ . '/../src/includes/notif-bell.php'; ?><?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
             <?php else: ?>
                 <a class="nav-link" href="/connexion.php">Se connecter</a>
                 <a class="sell-button" href="/connexion.php?redirect=/creer-annonce.php">+ Déposer une annonce</a>

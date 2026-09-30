@@ -33,7 +33,7 @@ $favoris = $stmt->fetchAll();
 <body>
     <header class="site-header">
         <a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a>
-        <nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav>
+        <nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/notif-bell.php'; ?><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav>
     </header>
     <main class="content-section listings-section" style="padding-top: 50px; padding-bottom: 90px;">
         <div class="section-heading">

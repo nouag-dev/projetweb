@@ -15,7 +15,7 @@ $user = currentUser();
         <a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a>
         <nav class="account-nav">
             <?php if ($user !== null): ?>
-                <a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
+                <a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/notif-bell.php'; ?><?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
             <?php else: ?>
                 <a href="/">Accueil</a><a href="/connexion.php">Se connecter</a>
             <?php endif; ?>

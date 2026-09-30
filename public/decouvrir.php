@@ -46,7 +46,7 @@ $annonces = $stmt->fetchAll();
             <a class="nav-link active" href="/decouvrir.php">Explorer</a>
         </nav>
         <nav class="account-nav">
-            <?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
+            <?php include __DIR__ . '/../src/includes/notif-bell.php'; ?><?php include __DIR__ . '/../src/includes/user-menu.php'; ?>
         </nav>
     </header>
 

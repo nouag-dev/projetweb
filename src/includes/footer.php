@@ -34,3 +34,11 @@
         <span>© <?= date('Y') ?> Campus — Projet étudiant</span>
     </div>
 </footer>
+<script>
+document.querySelectorAll('.success-message').forEach(function (el) {
+    setTimeout(function () {
+        el.style.opacity = '0';
+        setTimeout(function () { el.remove(); }, 500);
+    }, 3000);
+});
+</script>
