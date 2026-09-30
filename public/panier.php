@@ -5,7 +5,7 @@ requireAuth();
 $user = currentUser();
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,5 +28,6 @@ $user = currentUser();
             <a class="outline-button" href="/decouvrir.php">Découvrir des annonces</a>
         </div>
     </main>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>

@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Déposer une annonce | Campus</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
     <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav></header>
@@ -144,5 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-actions"><a class="outline-button" href="/profil.php">Annuler</a><button class="primary-button" type="submit">Publier l'annonce</button></div>
         </form>
     </section></main>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>

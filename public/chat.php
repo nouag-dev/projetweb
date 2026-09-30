@@ -129,7 +129,7 @@ if ($conversationId !== null) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Conversation | Campus</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
     <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav></header>
@@ -138,5 +138,6 @@ if ($conversationId !== null) {
         <?php elseif ($error !== null && (int) $announcement['vendeur_id'] === (int) $user['id_utilisateur']): ?><div class="empty-state"><h3><?= e($error) ?></h3><a class="outline-button" href="/annonce.php?id=<?= (int) $announcementId ?>">Retour à l'annonce</a></div>
         <?php else: ?><a class="back-link" href="/annonce.php?id=<?= (int) $announcementId ?>">← Retour à l'annonce</a><section class="chat-shell"><header class="chat-header"><div class="avatar small-avatar"><?= e(strtoupper(substr($announcement['prenom'], 0, 1) . substr($announcement['nom'], 0, 1))) ?></div><div><p class="eyebrow">Conversation à propos de</p><h1><?= e($announcement['titre']) ?></h1><p>avec <?= e($announcement['prenom'] . ' ' . $announcement['nom']) ?></p></div></header><div class="messages-list"><?php if ($messages === []): ?><div class="chat-empty">Écrivez un premier message au vendeur.</div><?php else: ?><?php foreach ($messages as $message): ?><div class="message <?= (int) $message['id_utilisateur'] === (int) $user['id_utilisateur'] ? 'message-own' : 'message-other' ?>"><p><?= nl2br(e($message['contenu'])) ?></p><small><?= e($message['prenom']) ?> · <?= e(date('d/m/Y H:i', strtotime($message['date_envoi']))) ?></small></div><?php endforeach; ?><?php endif; ?></div><?php if ($error !== null): ?><div class="form-errors"><p><?= e($error) ?></p></div><?php endif; ?><form method="post" class="chat-form"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="annonce" value="<?= (int) $announcementId ?>"><textarea name="message" rows="3" maxlength="2000" placeholder="Écrivez votre message..." required></textarea><button class="primary-button" type="submit">Envoyer</button></form></section><?php endif; ?>
     </main>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>

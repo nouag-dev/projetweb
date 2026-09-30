@@ -23,7 +23,7 @@ $stmt->execute(['user_id' => $user['id_utilisateur']]);
 $favoris = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,5 +75,6 @@ $favoris = $stmt->fetchAll();
             </div>
         <?php endif; ?>
     </main>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>

@@ -82,8 +82,15 @@ a { color: inherit; text-decoration: none; }
 .empty-state p { color: var(--muted); font: 13px Arial, sans-serif; margin: 0 0 22px; }
 .outline-button { border: 1px solid var(--green); color: var(--green); display: inline-block; font: bold 12px Arial, sans-serif; padding: 12px 15px; }
 .error-state { color: #9a3e2a; font: 13px Arial, sans-serif; }
-.site-footer { align-items: center; border-top: 1px solid var(--line); color: var(--muted); display: flex; font: 12px Arial, sans-serif; justify-content: space-between; margin: 0 auto; max-width: 1176px; padding: 24px 0 35px; }
-.site-footer > span:first-child { color: var(--ink); font: bold 18px Georgia, serif; }
+.site-footer-full { border-top: 1px solid var(--line); margin-top: 60px; padding: 50px 32px 0; }
+.footer-columns { display: grid; gap: 36px; grid-template-columns: 1.4fr 1fr 1fr 1fr; margin: 0 auto; max-width: 1240px; }
+.footer-col { display: flex; flex-direction: column; gap: 11px; }
+.footer-brand { color: var(--ink); font: bold 19px Georgia, serif; }
+.footer-col p { color: var(--muted); font: 13px Arial, sans-serif; line-height: 1.6; margin: 4px 0 0; max-width: 240px; }
+.footer-col h3 { color: var(--ink); font: bold 12px Arial, sans-serif; letter-spacing: .5px; text-transform: uppercase; margin: 0 0 3px; }
+.footer-col a { color: var(--muted); font: 13px Arial, sans-serif; }
+.footer-col a:hover { color: var(--green); }
+.footer-bottom { border-top: 1px solid var(--line); color: var(--muted); font: 12px Arial, sans-serif; margin: 40px auto 0; max-width: 1240px; padding: 20px 0 30px; }
 .account-page { min-height: 100vh; }
 .account-layout { display: grid; gap: 90px; grid-template-columns: minmax(280px, 1fr) minmax(380px, 500px); margin: 55px auto; max-width: 1050px; padding: 0 32px; }
 .account-intro { align-self: center; padding-bottom: 35px; }
@@ -107,7 +114,7 @@ a { color: inherit; text-decoration: none; }
 .profile-header { align-items: center; border-bottom: 1px solid var(--line); display: flex; gap: 18px; padding-bottom: 35px; }
 .profile-header h1 { font-size: 42px; font-weight: normal; margin: 0 0 7px; }
 .profile-header .compact-button { margin-left: auto; }
-.avatar { align-items: center; background: var(--peach); color: var(--green); display: flex; font: bold 20px Arial, sans-serif; height: 66px; justify-content: center; width: 66px; }
+.avatar { align-items: center; background: var(--peach); color: var(--green); display: flex; font: bold 20px Arial, sans-serif; height: 66px; justify-content: center; width: 66px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
 .profile-email { color: var(--muted); font: 13px Arial, sans-serif; margin: 0; }
 .success-message { background: #e9f2d2; color: var(--green); font: 13px Arial, sans-serif; margin-bottom: 25px; padding: 13px 16px; }
 .profile-content { padding-top: 55px; }
@@ -183,7 +190,9 @@ a { color: inherit; text-decoration: none; }
     .content-section { padding: 45px 20px 0; }
     .section-heading { align-items: start; flex-direction: column; gap: 10px; }
     .category-list, .listing-grid { grid-template-columns: 1fr; }
-    .site-footer { align-items: start; flex-direction: column; gap: 10px; margin: 0 20px; }
+    .site-footer-full { padding: 40px 20px 0; }
+    .footer-columns { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .footer-bottom { margin-top: 30px; padding: 16px 0 24px; }
     .account-nav { gap: 10px; }
     .account-layout { display: flex; flex-direction: column; gap: 25px; margin: 35px auto; padding: 0 20px; }
     .account-intro h1 { font-size: 42px; }
@@ -239,3 +248,55 @@ a { color: inherit; text-decoration: none; }
 .user-menu-dropdown a:hover { background: #f1f3e6; }
 .user-menu-dropdown a.logout-link { color: #c76648 !important; font-weight: normal !important; }
 .user-menu-dropdown hr { border: none; border-top: 1px solid var(--line); margin: 6px 0; }
+
+/* Thème sombre */
+html[data-theme="sombre"] {
+    --ink: #EDECE6;
+    --muted: #9A988F;
+    --paper: #1B1C19;
+    --surface: #24261F;
+    --line: #35362E;
+}
+html[data-theme="sombre"] .listing-image,
+html[data-theme="sombre"] .detail-main-photo,
+html[data-theme="sombre"] .detail-placeholder,
+html[data-theme="sombre"] .swipe-photo { background: #2E3026; }
+html[data-theme="sombre"] .category-item:hover,
+html[data-theme="sombre"] .listing-card:hover,
+html[data-theme="sombre"] .conversation-item:hover { background: #2A2C24; }
+html[data-theme="sombre"] .stack-form input,
+html[data-theme="sombre"] .stack-form textarea,
+html[data-theme="sombre"] .stack-form select { background: #1F211B; color: var(--ink); }
+html[data-theme="sombre"] .message-other { background: #33361f; }
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] {
+        --ink: #EDECE6; --muted: #9A988F; --paper: #1B1C19; --surface: #24261F; --line: #35362E;
+    }
+    html[data-theme="auto"] .listing-image,
+    html[data-theme="auto"] .detail-main-photo,
+    html[data-theme="auto"] .detail-placeholder,
+    html[data-theme="auto"] .swipe-photo { background: #2E3026; }
+    html[data-theme="auto"] .category-item:hover,
+    html[data-theme="auto"] .listing-card:hover,
+    html[data-theme="auto"] .conversation-item:hover { background: #2A2C24; }
+    html[data-theme="auto"] .stack-form input,
+    html[data-theme="auto"] .stack-form textarea,
+    html[data-theme="auto"] .stack-form select { background: #1F211B; color: var(--ink); }
+    html[data-theme="auto"] .message-other { background: #33361f; }
+}
+
+/* Sélecteur de thème dans les paramètres */
+.theme-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px; background: var(--surface); }
+.theme-pill { padding: 8px 16px; border-radius: 999px; font: bold 12px Arial, sans-serif; cursor: pointer; color: var(--muted); }
+.theme-pill.is-selected { background: var(--green); color: #fff; }
+
+/* Avatar photo (remplace les initiales quand une photo est définie) */
+.avatar-photo { width: 100%; height: 100%; object-fit: cover; }
+.user-menu-trigger .avatar-photo { width: 22px; height: 22px; border-radius: 50%; }
+
+/* Upload de photo de profil façon WhatsApp */
+.avatar-upload { position: relative; display: inline-block; cursor: pointer; }
+.avatar-xl { width: 120px; height: 120px; font-size: 38px; }
+.avatar-upload-icon { position: absolute; bottom: 2px; right: 2px; width: 36px; height: 36px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; border: 3px solid var(--surface); }
+.avatar-upload:hover .avatar-xl { opacity: .88; }

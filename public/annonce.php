@@ -11,7 +11,7 @@ if ($announcementId) {
         $pdo = getConnexion();
         $stmt = $pdo->prepare(
             'SELECT a.id_annonce, a.titre, a.description, a.prix, a.etat, a.date_publication,
-                    c.nom AS categorie, u.id_utilisateur AS vendeur_id, u.prenom, u.nom
+                    c.nom AS categorie, u.id_utilisateur AS vendeur_id, u.prenom, u.nom, u.photo_url
              FROM annonces a
              JOIN utilisateurs u ON u.id_utilisateur = a.id_utilisateur
              LEFT JOIN categories c ON c.id_categorie = a.id_categorie
@@ -35,7 +35,7 @@ if ($announcement === false || $announcement === null) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title><?= $announcement ? e($announcement['titre']) . ' | Campus' : 'Annonce introuvable | Campus' ?></title><link rel="stylesheet" href="/assets/style.css"></head>
 <body>
     <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php if (currentUser()): ?><?php include __DIR__ . '/../src/includes/user-menu.php'; ?><?php else: ?><a href="/connexion.php">Se connecter</a><?php endif; ?></nav></header>
@@ -48,9 +48,10 @@ if ($announcement === false || $announcement === null) {
                 <section class="detail-gallery">
                     <?php if ($photos === []): ?><div class="detail-placeholder"><?= e(strtoupper(substr($announcement['categorie'] ?? 'ANN', 0, 3))) ?></div><?php else: ?><div class="detail-main-photo"><img src="<?= e($photos[0]) ?>" alt="Photo de <?= e($announcement['titre']) ?>"></div><?php if (count($photos) > 1): ?><div class="detail-thumbnails"><?php foreach ($photos as $photo): ?><img src="<?= e($photo) ?>" alt="Photo de <?= e($announcement['titre']) ?>"><?php endforeach; ?></div><?php endif; ?><?php endif; ?>
                 </section>
-                <section class="detail-info"><div class="listing-meta"><span><?= e($announcement['categorie'] ?? 'Autre') ?></span><span><?= e($announcement['etat'] ?? 'Disponible') ?></span></div><h1><?= e($announcement['titre']) ?></h1><p class="detail-price"><?= number_format((float) $announcement['prix'], 2, ',', ' ') ?> €</p><p class="detail-description"><?= nl2br(e($announcement['description'])) ?></p><div class="seller-box"><div class="avatar small-avatar"><?= e(strtoupper(substr($announcement['prenom'], 0, 1) . substr($announcement['nom'], 0, 1))) ?></div><div><small>Publié par</small><strong><?= e($announcement['prenom'] . ' ' . $announcement['nom']) ?></strong></div></div><?php if (currentUser() !== null && (int) currentUser()['id_utilisateur'] === (int) $announcement['vendeur_id']): ?><div class="notice-box">C’est votre annonce.</div><?php else: ?><a class="primary-button contact-button" href="<?= currentUser() ? '/chat.php?annonce=' . (int) $announcement['id_annonce'] : '/connexion.php?redirect=' . rawurlencode('/chat.php?annonce=' . (int) $announcement['id_annonce']) ?>">Contacter le vendeur</a><?php endif; ?></section>
+                <section class="detail-info"><div class="listing-meta"><span><?= e($announcement['categorie'] ?? 'Autre') ?></span><span><?= e($announcement['etat'] ?? 'Disponible') ?></span></div><h1><?= e($announcement['titre']) ?></h1><p class="detail-price"><?= number_format((float) $announcement['prix'], 2, ',', ' ') ?> €</p><p class="detail-description"><?= nl2br(e($announcement['description'])) ?></p><div class="seller-box"><div class="avatar small-avatar"><?php if (!empty($announcement['photo_url'])): ?><img class="avatar-photo" src="<?= e($announcement['photo_url']) ?>" alt=""><?php else: ?><?= e(strtoupper(substr($announcement['prenom'], 0, 1) . substr($announcement['nom'], 0, 1))) ?><?php endif; ?></div><div><small>Publié par</small><strong><?= e($announcement['prenom'] . ' ' . $announcement['nom']) ?></strong></div></div><?php if (currentUser() !== null && (int) currentUser()['id_utilisateur'] === (int) $announcement['vendeur_id']): ?><div class="notice-box">C’est votre annonce.</div><?php else: ?><a class="primary-button contact-button" href="<?= currentUser() ? '/chat.php?annonce=' . (int) $announcement['id_annonce'] : '/connexion.php?redirect=' . rawurlencode('/chat.php?annonce=' . (int) $announcement['id_annonce']) ?>">Contacter le vendeur</a><?php endif; ?></section>
             </div>
         <?php endif; ?>
     </main>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>

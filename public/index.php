@@ -61,7 +61,7 @@ function iconForCategory(?string $icon): string
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -177,9 +177,6 @@ function iconForCategory(?string $icon): string
         </section>
     </main>
 
-    <footer class="site-footer">
-        <span>campus<span class="brand-dot">.</span></span>
-        <span>La plateforme de proximité des étudiants.</span>
-    </footer>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>

@@ -6,7 +6,11 @@ if ($__menuUser === null) {
 ?>
 <div class="user-menu">
     <button type="button" class="user-menu-trigger" id="user-menu-trigger" aria-haspopup="true" aria-expanded="false">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+        <?php if (!empty($__menuUser['photo_url'])): ?>
+            <img class="avatar-photo" src="<?= e($__menuUser['photo_url']) ?>" alt="">
+        <?php else: ?>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+        <?php endif; ?>
         <span><?= e($__menuUser['prenom']) ?></span>
     </button>
     <div class="user-menu-dropdown" id="user-menu-dropdown" hidden>

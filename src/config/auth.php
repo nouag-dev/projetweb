@@ -39,3 +39,13 @@ function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * Thème à appliquer (clair/sombre/auto) pour l'utilisateur courant, 'clair' par défaut.
+ */
+function currentTheme(): string
+{
+    $user = currentUser();
+    $theme = $user['theme'] ?? 'clair';
+    return in_array($theme, ['clair', 'sombre', 'auto'], true) ? $theme : 'clair';
+}

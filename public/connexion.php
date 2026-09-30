@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!checkCsrf($_POST['csrf_token'] ?? null)) {
         $error = 'La session du formulaire a expiré. Recommencez.';
     } else {
-        $stmt = getConnexion()->prepare('SELECT id_utilisateur, nom, prenom, email, mot_de_passe FROM utilisateurs WHERE email = :email');
+        $stmt = getConnexion()->prepare('SELECT id_utilisateur, nom, prenom, email, mot_de_passe, photo_url, theme, telephone, adresse, ville, pays FROM utilisateurs WHERE email = :email');
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
         if ($user === false || !password_verify($password, $user['mot_de_passe'])) {
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="<?= e(currentTheme()) ?>">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Connexion | Campus</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body class="account-page">
     <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><a class="nav-link" href="/inscription.php">Créer un compte</a></header>
@@ -51,5 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="form-footnote">Pas encore de compte ? <a href="/inscription.php">Inscris-toi ici</a></p>
         </section>
     </main>
+    <?php include __DIR__ . '/../src/includes/footer.php'; ?>
 </body>
 </html>
