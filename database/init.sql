@@ -82,6 +82,20 @@ CREATE TABLE messages (
     id_utilisateur INT NOT NULL REFERENCES utilisateurs(id_utilisateur)
 );
 
+CREATE TABLE offres (
+    id_offre SERIAL PRIMARY KEY,
+    id_annonce INT NOT NULL REFERENCES annonces(id_annonce) ON DELETE CASCADE,
+    id_utilisateur INT NOT NULL REFERENCES utilisateurs(id_utilisateur),
+    montant DECIMAL(10,2) NOT NULL,
+    message TEXT,
+    statut VARCHAR(30) NOT NULL DEFAULT 'en_attente',
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_reponse TIMESTAMP NULL,
+    UNIQUE (id_utilisateur, id_annonce)
+);
+
+CREATE INDEX idx_offres_annonce_statut ON offres (id_annonce, statut);
+
 -- Écoles partenaires (vérification du domaine email à l'inscription)
 INSERT INTO ecoles (nom, domaine_email) VALUES
     ('3iL Ingénieurs', 'etu-3il.fr'),

@@ -161,6 +161,29 @@ a { color: inherit; text-decoration: none; }
 .small-avatar { font-size: 13px; height: 42px; width: 42px; }
 .contact-button { display: block; text-align: center; }
 .notice-box { background: #e9f2d2; color: var(--green); font: 13px Arial, sans-serif; padding: 14px; text-align: center; }
+.offer-panel { background: var(--surface); border: 1px solid var(--line); margin-top: 24px; padding: 20px; }
+.offer-panel h3 { font-size: 20px; font-weight: normal; margin: 0 0 14px; }
+.offer-panel p { color: var(--muted); font: 13px Arial, sans-serif; line-height: 1.5; margin: 0 0 12px; }
+.offer-form { gap: 14px; }
+.offer-note { color: var(--ink) !important; }
+.offer-item { background: #fafaf5; border: 1px solid var(--line); margin-bottom: 12px; padding: 14px; }
+.offer-topline { align-items: center; display: flex; justify-content: space-between; margin-bottom: 8px; }
+.offer-topline strong { font: bold 14px Arial, sans-serif; }
+.offer-topline span { color: var(--green); font: bold 18px Arial, sans-serif; }
+.offer-item p { margin: 0 0 8px; }
+.offer-item small { color: var(--muted); font: 11px Arial, sans-serif; }
+.offer-annonce { color: var(--green) !important; font-weight: bold !important; }
+.offer-decision { margin-top: 12px; }
+.offer-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.compact-inline { padding: 10px 12px; }
+.offer-status { border-radius: 999px; display: inline-block; font: bold 11px Arial, sans-serif; margin-top: 10px; padding: 7px 10px; text-transform: uppercase; }
+.offer-status-en_attente { background: #f7f1d9; color: #8b6d1a; }
+.offer-status-acceptee { background: #e9f2d2; color: var(--green); }
+.offer-status-refusee { background: #f9e3dd; color: #9c422d; }
+.offer-section { border-top: 1px solid var(--line); }
+.offer-list { border-top: 1px solid var(--line); }
+.full-offer-item { margin-top: 18px; }
+.empty-offer-panel { color: var(--muted); }
 .chat-shell { background: var(--surface); border: 1px solid var(--line); margin: 0 auto; max-width: 720px; }
 .chat-header { align-items: center; border-bottom: 1px solid var(--line); display: flex; gap: 13px; padding: 24px; }
 .chat-header h1 { font-size: 24px; font-weight: normal; margin: 0 0 5px; }

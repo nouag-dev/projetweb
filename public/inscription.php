@@ -76,8 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($ecoleChoisie === null) {
         $errors[] = 'Sélectionne ton établissement dans la liste.';
-    } elseif ($values['email'] !== '' && !str_ends_with($values['email'], '@' . $ecoleChoisie['domaine_email'])) {
-        $errors[] = 'Ton email doit se terminer par @' . $ecoleChoisie['domaine_email'] . ' pour cet établissement.';
     }
 
     if ($errors === []) {
@@ -112,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (PDOException $exception) {
             $errors[] = $exception->getCode() === '23505'
                 ? 'Cette adresse email est déjà utilisée.'
-                : 'Impossible de créer le compte pour le moment.';
+                : 'Une erreur technique est survenue pendant la création du compte. Merci de réessayer.';
         }
     }
 }
@@ -148,10 +146,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <small>Ton email devra se terminer par le domaine de l'établissement choisi.</small>
+                    <small>Ton email doit être une adresse de ton établissement, par exemple prenom.nom@ecole.fr.</small>
                 </label>
 
-                <label>Email étudiant<input type="email" name="email" value="<?= e($values['email']) ?>" placeholder="prenom.nom@etu-ecole.fr" required></label>
+                <label>Email étudiant<input type="email" name="email" value="<?= e($values['email']) ?>" placeholder="prenom.nom@ecole.fr" required></label>
 
                 <div class="form-row">
                     <label>Date de naissance
