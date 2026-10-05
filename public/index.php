@@ -181,7 +181,7 @@ function iconForCategory(?string $icon): string
             <div class="category-scroll">
                 <div class="category-scroll-track" style="animation-duration: <?= $categoryScrollDuration ?>s;">
                     <?php foreach (array_merge($categories, $categories) as $category): ?>
-                        <a class="category-item" href="/?category=<?= (int) $category['id_categorie'] ?>">
+                        <a class="category-item" href="/categorie.php?id=<?= (int) $category['id_categorie'] ?>">
                             <span class="category-icon"><?= iconForCategory($category['icone']) ?></span>
                             <span><?= e($category['nom']) ?></span>
                             <span class="category-arrow">↗</span>
