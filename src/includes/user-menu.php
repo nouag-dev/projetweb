@@ -16,7 +16,7 @@ if ($__menuUser === null) {
     <div class="user-menu-dropdown" id="user-menu-dropdown" hidden>
         <a href="/profil.php">Mon compte</a>
         <a href="/favoris.php">Mes favoris</a>
-        <a href="/panier.php">Panier</a>
+        <a href="/panier.php">Mes offres</a>
         <a href="/parametres.php">Paramètres</a>
         <hr>
         <a class="logout-link" href="/deconnexion.php">Se déconnecter</a>

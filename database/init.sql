@@ -43,7 +43,9 @@ CREATE TABLE annonces (
     etat VARCHAR(50),
     date_publication TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_utilisateur INT NOT NULL REFERENCES utilisateurs(id_utilisateur),
-    id_categorie INT REFERENCES categories(id_categorie)
+    id_categorie INT REFERENCES categories(id_categorie),
+    statut_vente VARCHAR(20) NOT NULL DEFAULT 'disponible'
+        CHECK (statut_vente IN ('disponible', 'vendue', 'retiree'))
 );
 
 CREATE TABLE photos (
@@ -95,6 +97,25 @@ CREATE TABLE offres (
 );
 
 CREATE INDEX idx_offres_annonce_statut ON offres (id_annonce, statut);
+
+CREATE TABLE avis (
+    id_avis SERIAL PRIMARY KEY,
+    id_annonce INT NOT NULL REFERENCES annonces(id_annonce) ON DELETE CASCADE,
+    id_acheteur INT NOT NULL REFERENCES utilisateurs(id_utilisateur),
+    note SMALLINT NOT NULL CHECK (note BETWEEN 1 AND 5),
+    commentaire VARCHAR(1000) NOT NULL DEFAULT '',
+    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (id_annonce, id_acheteur)
+);
+
+CREATE TABLE signalements (
+    id_signalement SERIAL PRIMARY KEY,
+    id_annonce INT NOT NULL REFERENCES annonces(id_annonce) ON DELETE CASCADE,
+    id_utilisateur INT NOT NULL REFERENCES utilisateurs(id_utilisateur),
+    motif VARCHAR(1000) NOT NULL,
+    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (id_annonce, id_utilisateur)
+);
 
 -- Écoles partenaires (vérification du domaine email à l'inscription)
 INSERT INTO ecoles (nom, domaine_email) VALUES

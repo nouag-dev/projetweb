@@ -18,7 +18,8 @@ $stmt = $pdo->prepare(
     FROM annonces a
     JOIN utilisateurs u ON u.id_utilisateur = a.id_utilisateur
     LEFT JOIN categories c ON c.id_categorie = a.id_categorie
-    WHERE a.id_utilisateur <> :user_id
+        WHERE a.statut_vente = 'disponible'
+            AND a.id_utilisateur <> :user_id
       AND NOT EXISTS (
           SELECT 1 FROM likes l
           WHERE l.id_annonce = a.id_annonce AND l.id_utilisateur = :user_id2
@@ -84,23 +85,34 @@ $annonces = $stmt->fetchAll();
         var index = 0;
 
         function cardMarkup(annonce, position) {
-            var photo = annonce.photo_url
-                ? '<img src="' + annonce.photo_url + '" alt="">'
-                : (annonce.categorie || 'Annonce').slice(0, 3).toUpperCase();
             var priceLabel = Number(annonce.prix).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
             var el = document.createElement('div');
             el.className = 'swipe-card ' + (position === 'top' ? 'swipe-card-top' : 'swipe-card-behind');
-            el.innerHTML =
-                '<div class="swipe-photo">' + photo +
-                    '<span class="swipe-badge swipe-badge-category">' + (annonce.categorie || 'Autre') + '</span>' +
-                    '<span class="swipe-badge swipe-badge-price">' + priceLabel + '</span>' +
-                    '<span class="swipe-stamp swipe-stamp-like">J\'aime</span>' +
-                    '<span class="swipe-stamp swipe-stamp-pass">Passe</span>' +
-                '</div>' +
-                '<div class="swipe-info">' +
-                    '<h3>' + annonce.titre + '</h3>' +
-                    '<div class="swipe-meta">' + (annonce.etat || 'Disponible') + ' · proposé par ' + annonce.prenom + '</div>' +
-                '</div>';
+            var photo = document.createElement('div');
+            photo.className = 'swipe-photo';
+            if (annonce.photo_url) {
+                var image = document.createElement('img');
+                image.src = annonce.photo_url;
+                image.alt = '';
+                photo.appendChild(image);
+            } else {
+                photo.textContent = (annonce.categorie || 'Annonce').slice(0, 3).toUpperCase();
+            }
+            [['swipe-badge swipe-badge-category', annonce.categorie || 'Autre'], ['swipe-badge swipe-badge-price', priceLabel], ['swipe-stamp swipe-stamp-like', 'J’aime'], ['swipe-stamp swipe-stamp-pass', 'Passe']].forEach(function (item) {
+                var badge = document.createElement('span');
+                badge.className = item[0];
+                badge.textContent = item[1];
+                photo.appendChild(badge);
+            });
+            var info = document.createElement('div');
+            info.className = 'swipe-info';
+            var title = document.createElement('h3');
+            title.textContent = annonce.titre;
+            var meta = document.createElement('div');
+            meta.className = 'swipe-meta';
+            meta.textContent = (annonce.etat || 'Disponible') + ' · proposé par ' + annonce.prenom;
+            info.append(title, meta);
+            el.append(photo, info);
             return el;
         }
 

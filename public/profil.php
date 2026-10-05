@@ -20,7 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'repon
                      date_reponse = NOW()
                  FROM annonces a
                  WHERE o.id_offre = :offre_id
+                                     AND o.statut = \'en_attente\'
                    AND a.id_annonce = o.id_annonce
+                                     AND a.statut_vente = \'disponible\'
                    AND a.id_utilisateur = :user_id'
             );
             $stmt->execute([
@@ -28,17 +30,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'repon
                 'offre_id' => $offreId,
                 'user_id' => $user['id_utilisateur'],
             ]);
-            $_SESSION['profile_success'] = $decision === 'acceptee' ? 'L’offre a été acceptée.' : 'L’offre a été refusée.';
+            if ($stmt->rowCount() > 0) {
+                $_SESSION['profile_success'] = $decision === 'acceptee' ? 'L’offre a été acceptée.' : 'L’offre a été refusée.';
+                if ($decision === 'acceptee') {
+                    $closeOffers = $pdo->prepare(
+                        "UPDATE offres SET statut = 'refusee', date_reponse = NOW()
+                         WHERE id_annonce = (SELECT id_annonce FROM offres WHERE id_offre = :offer_id)
+                           AND id_offre <> :offer_id2 AND statut = 'en_attente'"
+                    );
+                    $closeOffers->execute(['offer_id' => $offreId, 'offer_id2' => $offreId]);
+                }
+            } else {
+                $_SESSION['profile_error'] = 'Cette offre a déjà été traitée ou l’annonce n’est plus disponible.';
+            }
         }
     }
     header('Location: /profil.php#offres');
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_POST['action'] ?? '', ['changer_statut_annonce', 'retirer_annonce'], true)) {
+    if (!checkCsrf($_POST['csrf_token'] ?? null)) {
+        $_SESSION['profile_error'] = 'La session du formulaire a expiré.';
+    } else {
+        $listingId = filter_input(INPUT_POST, 'id_annonce', FILTER_VALIDATE_INT);
+        if ($listingId === false || $listingId === null) {
+            $_SESSION['profile_error'] = 'Annonce invalide.';
+        } elseif (($_POST['action'] ?? '') === 'retirer_annonce') {
+            $removeStmt = $pdo->prepare(
+                "UPDATE annonces SET statut_vente = 'retiree'
+                 WHERE id_annonce = :id AND id_utilisateur = :user_id"
+            );
+            $removeStmt->execute(['id' => $listingId, 'user_id' => $user['id_utilisateur']]);
+            $_SESSION[$removeStmt->rowCount() > 0 ? 'profile_success' : 'profile_error'] = $removeStmt->rowCount() > 0
+                ? 'L’annonce a été retirée.'
+                : 'Cette annonce ne peut pas être modifiée.';
+        } else {
+            $newStatus = (string) ($_POST['statut_vente'] ?? '');
+            if (!in_array($newStatus, ['disponible', 'vendue'], true)) {
+                $_SESSION['profile_error'] = 'Statut invalide.';
+            } else {
+                $statusStmt = $pdo->prepare(
+                    'UPDATE annonces SET statut_vente = :status
+                     WHERE id_annonce = :id AND id_utilisateur = :user_id AND statut_vente <> \'retiree\''
+                );
+                $statusStmt->execute([
+                    'status' => $newStatus,
+                    'id' => $listingId,
+                    'user_id' => $user['id_utilisateur'],
+                ]);
+                if ($newStatus === 'vendue' && $statusStmt->rowCount() > 0) {
+                    $closeOffers = $pdo->prepare(
+                        "UPDATE offres SET statut = 'refusee', date_reponse = NOW()
+                         WHERE id_annonce = :id AND statut = 'en_attente'"
+                    );
+                    $closeOffers->execute(['id' => $listingId]);
+                }
+                $_SESSION[$statusStmt->rowCount() > 0 ? 'profile_success' : 'profile_error'] = $statusStmt->rowCount() > 0
+                    ? ($newStatus === 'vendue' ? 'L’annonce est marquée comme vendue.' : 'L’annonce est de nouveau disponible.')
+                    : 'Cette annonce ne peut pas être modifiée.';
+            }
+        }
+    }
+    header('Location: /profil.php');
+    exit;
+}
+
 $stmt = $pdo->prepare(
-    'SELECT id_annonce, titre, prix, etat, date_publication
+    'SELECT id_annonce, titre, prix, etat, date_publication, statut_vente
      FROM annonces
      WHERE id_utilisateur = :user_id
+       AND statut_vente <> \'retiree\'
      ORDER BY date_publication DESC'
 );
 $stmt->execute(['user_id' => $user['id_utilisateur']]);
@@ -88,13 +150,13 @@ $conversations = $conversationStmt->fetchAll();
 <body>
     <header class="site-header"><a class="brand" href="/"><span class="brand-mark">C</span><span>campus<span class="brand-dot">.</span></span></a><nav class="account-nav"><a href="/">Accueil</a><?php include __DIR__ . '/../src/includes/notif-bell.php'; ?><?php include __DIR__ . '/../src/includes/user-menu.php'; ?></nav></header>
     <main class="profile-layout">
-        <?php if (isset($_GET['created'])): ?><div class="success-message">Ton compte a bien été créé.</div><?php elseif (isset($_GET['published'])): ?><div class="success-message">Ton annonce a bien été publiée.</div><?php endif; ?>
+        <?php if (isset($_GET['created'])): ?><div class="success-message">Ton compte a bien été créé.</div><?php elseif (isset($_GET['published'])): ?><div class="success-message">Ton annonce a bien été publiée.</div><?php elseif (isset($_GET['updated'])): ?><div class="success-message">Ton annonce a bien été mise à jour.</div><?php endif; ?>
         <?php if (!empty($_SESSION['profile_success'])): ?><div class="success-message"><?= e($_SESSION['profile_success']) ?></div><?php unset($_SESSION['profile_success']); endif; ?>
         <?php if (!empty($_SESSION['profile_error'])): ?><div class="form-errors"><p><?= e($_SESSION['profile_error']) ?></p></div><?php unset($_SESSION['profile_error']); endif; ?>
         <section class="profile-header"><div class="avatar"><?php if (!empty($user['photo_url'])): ?><img class="avatar-photo" src="<?= e($user['photo_url']) ?>" alt=""><?php else: ?><?= e(strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1))) ?><?php endif; ?></div><div><p class="eyebrow">Mon espace</p><h1><?= e($user['prenom'] . ' ' . $user['nom']) ?></h1><p class="profile-email"><?= e($user['email']) ?></p></div><a class="primary-button compact-button" href="/creer-annonce.php">+ Déposer une annonce</a></section>
         <section class="profile-content"><div class="section-heading"><div><p class="eyebrow">Ton activité</p><h2>Mes annonces</h2></div><span class="section-count"><?= count($annonces) ?> annonce<?= count($annonces) > 1 ? 's' : '' ?></span></div>
             <?php if ($annonces === []): ?><div class="empty-state"><span class="empty-icon">○</span><h3>Tu n'as encore rien publié</h3><p>Commence par proposer un objet ou un service à ton campus.</p><a class="outline-button" href="/creer-annonce.php">Créer une annonce</a></div>
-            <?php else: ?><div class="profile-list"><?php foreach ($annonces as $annonce): ?><article class="profile-list-item"><div><span class="listing-meta"><?= e($annonce['etat'] ?? 'Disponible') ?></span><h3><?= e($annonce['titre']) ?></h3><small>Publiée le <?= e(date('d/m/Y', strtotime($annonce['date_publication']))) ?></small></div><strong><?= number_format((float) $annonce['prix'], 2, ',', ' ') ?> €</strong></article><?php endforeach; ?></div><?php endif; ?>
+            <?php else: ?><div class="profile-list"><?php foreach ($annonces as $annonce): ?><article class="profile-list-item"><div class="profile-list-copy"><span class="listing-meta"><?= e($annonce['etat'] ?? 'Disponible') ?> · <?= $annonce['statut_vente'] === 'vendue' ? 'Vendue' : 'En ligne' ?></span><h3><?= e($annonce['titre']) ?></h3><small>Publiée le <?= e(date('d/m/Y', strtotime($annonce['date_publication']))) ?></small></div><div class="profile-list-management"><strong><?= number_format((float) $annonce['prix'], 2, ',', ' ') ?> €</strong><div class="offer-actions"><a class="outline-button compact-inline" href="/annonce.php?id=<?= (int) $annonce['id_annonce'] ?>">Voir</a><?php if ($annonce['statut_vente'] !== 'vendue'): ?><a class="outline-button compact-inline" href="/modifier-annonce.php?id=<?= (int) $annonce['id_annonce'] ?>">Modifier</a><?php endif; ?><form method="post"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="action" value="changer_statut_annonce"><input type="hidden" name="id_annonce" value="<?= (int) $annonce['id_annonce'] ?>"><input type="hidden" name="statut_vente" value="<?= $annonce['statut_vente'] === 'vendue' ? 'disponible' : 'vendue' ?>"><button class="outline-button compact-inline" type="submit"><?= $annonce['statut_vente'] === 'vendue' ? 'Remettre en ligne' : 'Marquer vendue' ?></button></form><form method="post" onsubmit="return confirm('Retirer cette annonce ?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="action" value="retirer_annonce"><input type="hidden" name="id_annonce" value="<?= (int) $annonce['id_annonce'] ?>"><button class="outline-button compact-inline" type="submit">Retirer</button></form></div></div></article><?php endforeach; ?></div><?php endif; ?>
         </section>
         <section id="offres" class="profile-content offer-section"><div class="section-heading"><div><p class="eyebrow">Gestion de la négociation</p><h2>Offres reçues</h2></div><span class="section-count"><?= count($offresRecues) ?> offre<?= count($offresRecues) > 1 ? 's' : '' ?></span></div>
             <?php if ($offresRecues === []): ?><div class="empty-state compact-empty"><span class="empty-icon">○</span><h3>Aucune offre pour le moment</h3><p>Quand un acheteur proposera un prix, tu pourras l’accepter ou le refuser ici.</p></div>
@@ -102,7 +164,7 @@ $conversations = $conversationStmt->fetchAll();
         </section>
         <section id="messages" class="profile-content message-section"><div class="section-heading"><div><p class="eyebrow">Échanger avec les intéressés</p><h2>Messages</h2></div><span class="section-count"><?= count($conversations) ?> conversation<?= count($conversations) > 1 ? 's' : '' ?></span></div>
             <?php if ($conversations === []): ?><div class="empty-state compact-empty"><span class="empty-icon">○</span><h3>Aucun message pour le moment</h3><p>Les personnes intéressées par tes annonces apparaîtront ici.</p></div>
-            <?php else: ?><div class="conversation-list"><?php foreach ($conversations as $conversation): ?><a class="conversation-item <?= (int) $conversation['non_lus'] > 0 ? 'conversation-unread' : '' ?>" href="/chat.php?conversation=<?= (int) $conversation['id_conversation'] ?>"><div class="avatar conversation-avatar"><?= e(stroupper(substr($conversation['interlocuteur_prenom'], 0, 1) . substr($conversation['interlocuteur_nom'], 0, 1))) ?></div><div class="conversation-copy"><div class="conversation-topline"><strong><?= e($conversation['interlocuteur_prenom'] . ' ' . $conversation['interlocuteur_nom']) ?></strong><small><?= $conversation['date_envoi'] ? e(date('d/m/Y H:i', strtotime($conversation['date_envoi']))) : '' ?></small></div><h3><?= e($conversation['titre']) ?></h3><p><?= e($conversation['dernier_message'] ?? 'Nouvelle conversation') ?></p></div><?php if ((int) $conversation['non_lus'] > 0): ?><span class="unread-badge"><?= (int) $conversation['non_lus'] ?></span><?php endif; ?></a><?php endforeach; ?></div><?php endif; ?>
+            <?php else: ?><div class="conversation-list"><?php foreach ($conversations as $conversation): ?><a class="conversation-item <?= (int) $conversation['non_lus'] > 0 ? 'conversation-unread' : '' ?>" href="/chat.php?conversation=<?= (int) $conversation['id_conversation'] ?>"><div class="avatar conversation-avatar"><?= e(strtoupper(substr($conversation['interlocuteur_prenom'], 0, 1) . substr($conversation['interlocuteur_nom'], 0, 1))) ?></div><div class="conversation-copy"><div class="conversation-topline"><strong><?= e($conversation['interlocuteur_prenom'] . ' ' . $conversation['interlocuteur_nom']) ?></strong><small><?= $conversation['date_envoi'] ? e(date('d/m/Y H:i', strtotime($conversation['date_envoi']))) : '' ?></small></div><h3><?= e($conversation['titre']) ?></h3><p><?= e($conversation['dernier_message'] ?? 'Nouvelle conversation') ?></p></div><?php if ((int) $conversation['non_lus'] > 0): ?><span class="unread-badge"><?= (int) $conversation['non_lus'] ?></span><?php endif; ?></a><?php endforeach; ?></div><?php endif; ?>
         </section>
     </main>
     <?php include __DIR__ . '/../src/includes/footer.php'; ?>

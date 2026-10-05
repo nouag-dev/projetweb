@@ -19,6 +19,7 @@
                 <a href="/connexion.php">Se connecter</a>
             <?php else: ?>
                 <a href="/profil.php">Mon profil</a>
+                <a href="/panier.php">Mes offres envoyées</a>
                 <a href="/parametres.php">Paramètres</a>
                 <a href="/creer-annonce.php">Déposer une annonce</a>
             <?php endif; ?>

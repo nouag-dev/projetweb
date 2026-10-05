@@ -31,6 +31,15 @@ $user = currentUser();
 
 try {
     $pdo = getConnexion();
+    $availableStmt = $pdo->prepare(
+        "SELECT 1 FROM annonces WHERE id_annonce = :annonce AND statut_vente = 'disponible' AND id_utilisateur <> :user"
+    );
+    $availableStmt->execute(['annonce' => $annonceId, 'user' => $user['id_utilisateur']]);
+    if (!$availableStmt->fetchColumn()) {
+        http_response_code(404);
+        echo json_encode(['ok' => false, 'error' => 'Annonce indisponible.']);
+        exit;
+    }
     $stmt = $pdo->prepare(
         'INSERT INTO likes (id_utilisateur, id_annonce, statut, date_like)
          VALUES (:user, :annonce, :statut, CURRENT_TIMESTAMP)
