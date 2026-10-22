@@ -68,7 +68,7 @@ unset($annonce);
         <div class="swipe-heading">
             <p class="eyebrow">Un objet à la fois</p>
             <h1>Découvrir</h1>
-            <p>Glisse à droite si ça t'intéresse, à gauche pour passer.</p>
+            <p>À droite ou ♥ pour aimer ; à gauche ou ✕ pour indiquer que tu n’es pas intéressé.</p>
         </div>
 
         <?php if ($annonces === []): ?>
@@ -79,9 +79,10 @@ unset($annonce);
                 <a class="outline-button" href="/">Voir toutes les annonces</a>
             </div>
         <?php else: ?>
+            <p class="swipe-feedback" id="swipe-feedback" role="status" aria-live="polite" hidden></p>
             <div class="swipe-stack" id="swipe-stack"></div>
             <div class="swipe-actions">
-                <button type="button" class="swipe-btn swipe-btn-pass" id="btn-pass" aria-label="Passer">✕</button>
+                <button type="button" class="swipe-btn swipe-btn-pass" id="btn-pass" aria-label="Pas intéressé" title="Pas intéressé">✕</button>
                 <button type="button" class="swipe-btn swipe-btn-like" id="btn-like" aria-label="J'aime">♥</button>
             </div>
         <?php endif; ?>
@@ -95,7 +96,9 @@ unset($annonce);
 
         var data = JSON.parse(document.getElementById('annonces-data').textContent);
         var csrfToken = <?= json_encode(csrfToken()) ?>;
+        var feedback = document.getElementById('swipe-feedback');
         var index = 0;
+        var actionInProgress = false;
 
         function cardMarkup(annonce, position) {
             var priceLabel = Number(annonce.prix).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
@@ -135,6 +138,8 @@ unset($annonce);
 
         function render() {
             stack.innerHTML = '';
+            feedback.hidden = true;
+            feedback.textContent = '';
             if (index >= data.length) {
                 stack.outerHTML = '<div class="swipe-empty"><span class="empty-icon">○</span>' +
                     '<h3>Tu as tout vu pour l\'instant</h3>' +
@@ -152,74 +157,125 @@ unset($annonce);
         }
 
         function sendChoice(annonceId, statut) {
-            fetch('/api/like.php', {
+            return fetch('/api/like.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_annonce: annonceId, statut: statut, csrf_token: csrfToken })
-            }).catch(function () { /* échec silencieux, on ne bloque pas l'UI */ });
+            }).then(function (response) {
+                return response.json().catch(function () {
+                    throw new Error('Le serveur a renvoyé une réponse invalide.');
+                }).then(function (result) {
+                    if (!response.ok || !result.ok) {
+                        throw new Error(result.error || 'Impossible d’enregistrer ce choix.');
+                    }
+                });
+            });
         }
 
-        function swipeOut(card, direction, callback) {
+        function swipeOut(card, direction) {
             var distance = direction === 'like' ? 600 : -600;
             var rotation = direction === 'like' ? 22 : -22;
             card.style.transition = 'transform .35s ease, opacity .35s ease';
             card.style.transform = 'translateX(' + distance + 'px) rotate(' + rotation + 'deg)';
             card.style.opacity = '0';
-            setTimeout(callback, 300);
+            return new Promise(function (resolve) {
+                setTimeout(resolve, 350);
+            });
         }
 
         function choose(direction) {
             var card = stack.querySelector('.swipe-card-top');
-            if (!card) return;
+            if (!card || actionInProgress) return;
+            actionInProgress = true;
+            feedback.hidden = true;
+            feedback.textContent = '';
+            setButtonsDisabled(true);
             var annonce = data[index];
-            sendChoice(annonce.id_annonce, direction === 'like' ? 'like' : 'passe');
-            swipeOut(card, direction, function () {
-                index += 1;
-                render();
+            card.style.pointerEvents = 'none';
+            swipeOut(card, direction)
+                .then(function () {
+                    return sendChoice(annonce.id_annonce, direction === 'like' ? 'like' : 'passe');
+                })
+                .then(function () {
+                    index += 1;
+                    actionInProgress = false;
+                    setButtonsDisabled(false);
+                    render();
+                })
+                .catch(function (error) {
+                    card.style.transition = 'transform .2s ease, opacity .2s ease';
+                    card.style.transform = 'translate(0, 0) rotate(0)';
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = '';
+                    card.querySelector('.swipe-stamp-like').style.opacity = '0';
+                    card.querySelector('.swipe-stamp-pass').style.opacity = '0';
+                    feedback.textContent = error.message;
+                    feedback.hidden = false;
+                    actionInProgress = false;
+                    setButtonsDisabled(false);
+                });
+        }
+
+        function setButtonsDisabled(disabled) {
+            var buttons = document.querySelectorAll('.swipe-actions button');
+            buttons.forEach(function (button) {
+                button.disabled = disabled;
             });
         }
 
         function attachDrag(card) {
-            var startX = 0, startY = 0, currentX = 0, dragging = false;
+            var startX = 0, currentX = 0, dragging = false, pointerId = null;
 
             function pointerDown(e) {
+                if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0) || actionInProgress) return;
                 dragging = true;
-                startX = (e.touches ? e.touches[0].clientX : e.clientX);
-                startY = (e.touches ? e.touches[0].clientY : e.clientY);
+                pointerId = e.pointerId;
+                startX = e.clientX;
+                currentX = 0;
+                card.setPointerCapture(pointerId);
                 card.style.transition = 'none';
             }
             function pointerMove(e) {
-                if (!dragging) return;
-                var x = (e.touches ? e.touches[0].clientX : e.clientX);
-                var y = (e.touches ? e.touches[0].clientY : e.clientY);
-                currentX = x - startX;
+                if (!dragging || e.pointerId !== pointerId) return;
+                currentX = e.clientX - startX;
                 var rotation = currentX / 14;
-                card.style.transform = 'translate(' + currentX + 'px, ' + (y - startY) + 'px) rotate(' + rotation + 'deg)';
+                card.style.transform = 'translate(' + currentX + 'px, 0) rotate(' + rotation + 'deg)';
                 var likeStamp = card.querySelector('.swipe-stamp-like');
                 var passStamp = card.querySelector('.swipe-stamp-pass');
                 likeStamp.style.opacity = Math.max(0, Math.min(1, currentX / 100));
                 passStamp.style.opacity = Math.max(0, Math.min(1, -currentX / 100));
             }
-            function pointerUp() {
-                if (!dragging) return;
+            function resetPosition() {
+                card.style.transition = 'transform .25s ease';
+                card.style.transform = 'translate(0, 0) rotate(0)';
+                card.querySelector('.swipe-stamp-like').style.opacity = '0';
+                card.querySelector('.swipe-stamp-pass').style.opacity = '0';
+            }
+            function pointerUp(e) {
+                if (!dragging || e.pointerId !== pointerId) return;
                 dragging = false;
-                if (currentX > 120) {
+                pointerId = null;
+                var threshold = Math.max(90, card.offsetWidth * .25);
+                if (currentX > threshold) {
                     choose('like');
-                } else if (currentX < -120) {
+                } else if (currentX < -threshold) {
                     choose('passe');
                 } else {
-                    card.style.transition = 'transform .25s ease';
-                    card.style.transform = 'translate(0, 0) rotate(0)';
+                    resetPosition();
                 }
                 currentX = 0;
             }
-
-            card.addEventListener('mousedown', pointerDown);
-            window.addEventListener('mousemove', pointerMove);
-            window.addEventListener('mouseup', pointerUp);
-            card.addEventListener('touchstart', pointerDown, { passive: true });
-            card.addEventListener('touchmove', pointerMove, { passive: true });
-            card.addEventListener('touchend', pointerUp);
+            function pointerCancel(e) {
+                if (!dragging || e.pointerId !== pointerId) return;
+                dragging = false;
+                pointerId = null;
+                currentX = 0;
+                resetPosition();
+            }
+            card.addEventListener('pointerdown', pointerDown);
+            card.addEventListener('pointermove', pointerMove);
+            card.addEventListener('pointerup', pointerUp);
+            card.addEventListener('pointercancel', pointerCancel);
         }
 
         var btnLike = document.getElementById('btn-like');

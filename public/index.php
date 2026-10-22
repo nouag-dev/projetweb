@@ -49,6 +49,9 @@ try {
           AND (CAST(:maximum_price AS numeric) IS NULL OR a.prix <= CAST(:maximum_price AS numeric))
           AND (:state = '' OR a.etat = :state_filter)
     SQL;
+    if ($user !== null) {
+        $where .= ' AND a.id_utilisateur <> :current_user_id';
+    }
     $parameters = [
         'search' => $search,
         'pattern_title' => '%' . $search . '%',
@@ -59,6 +62,9 @@ try {
         'state' => $state,
         'state_filter' => $state,
     ];
+    if ($user !== null) {
+        $parameters['current_user_id'] = $user['id_utilisateur'];
+    }
     $countStmt = $pdo->prepare('SELECT COUNT(*) FROM annonces a ' . $where);
     $countStmt->execute($parameters);
     $resultCount = (int) $countStmt->fetchColumn();

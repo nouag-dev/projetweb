@@ -15,11 +15,17 @@ $stmt = $pdo->prepare(
     JOIN annonces a ON a.id_annonce = l.id_annonce
     JOIN utilisateurs u ON u.id_utilisateur = a.id_utilisateur
     LEFT JOIN categories c ON c.id_categorie = a.id_categorie
-    WHERE l.id_utilisateur = :user_id AND l.statut = 'like' AND a.statut_vente = 'disponible'
+    WHERE l.id_utilisateur = :user_id
+      AND a.id_utilisateur <> :seller_id
+      AND l.statut = 'like'
+      AND a.statut_vente = 'disponible'
     ORDER BY l.date_like DESC
     SQL
 );
-$stmt->execute(['user_id' => $user['id_utilisateur']]);
+$stmt->execute([
+    'user_id' => $user['id_utilisateur'],
+    'seller_id' => $user['id_utilisateur'],
+]);
 $favoris = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>

@@ -16,8 +16,7 @@ if ($categoryId) {
         $categorie = $stmt->fetch();
 
         if ($categorie !== false) {
-            $stmt = $pdo->prepare(
-                <<<'SQL'
+            $query = <<<'SQL'
                 SELECT
                     a.id_annonce, a.titre, a.description, a.prix, a.etat,
                     u.prenom,
@@ -26,10 +25,15 @@ if ($categoryId) {
                 JOIN utilisateurs u ON u.id_utilisateur = a.id_utilisateur
                 WHERE a.id_categorie = :id
                   AND a.statut_vente = 'disponible'
-                ORDER BY a.date_publication DESC
-                SQL
-            );
-            $stmt->execute(['id' => $categoryId]);
+            SQL;
+            $parameters = ['id' => $categoryId];
+            if ($user !== null) {
+                $query .= ' AND a.id_utilisateur <> :current_user_id';
+                $parameters['current_user_id'] = $user['id_utilisateur'];
+            }
+            $query .= ' ORDER BY a.date_publication DESC';
+            $stmt = $pdo->prepare($query);
+            $stmt->execute($parameters);
             $annonces = $stmt->fetchAll();
         }
     } catch (Throwable $exception) {
