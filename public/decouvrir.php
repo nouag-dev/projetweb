@@ -24,12 +24,25 @@ $stmt = $pdo->prepare(
           SELECT 1 FROM likes l
           WHERE l.id_annonce = a.id_annonce AND l.id_utilisateur = :user_id2
       )
-    ORDER BY a.date_publication DESC
+    ORDER BY CASE
+        WHEN :location_city = '' OR lower(trim(u.ville)) = lower(trim(:location_city_match)) THEN 0
+        ELSE 1
+    END, a.date_publication DESC
     LIMIT 30
     SQL
 );
-$stmt->execute(['user_id' => $user['id_utilisateur'], 'user_id2' => $user['id_utilisateur']]);
+$userCity = trim((string) ($user['ville'] ?? ''));
+$stmt->execute([
+    'user_id' => $user['id_utilisateur'],
+    'user_id2' => $user['id_utilisateur'],
+    'location_city' => $userCity,
+    'location_city_match' => $userCity,
+]);
 $annonces = $stmt->fetchAll();
+foreach ($annonces as &$annonce) {
+    $annonce['placeholder_url'] = announcementPlaceholderUrl($annonce['titre'], $annonce['categorie']);
+}
+unset($annonce);
 ?>
 <!DOCTYPE html>
 <html lang="fr" data-theme="<?= e(currentTheme()) ?>">
@@ -96,7 +109,11 @@ $annonces = $stmt->fetchAll();
                 image.alt = '';
                 photo.appendChild(image);
             } else {
-                photo.textContent = (annonce.categorie || 'Annonce').slice(0, 3).toUpperCase();
+                var placeholder = document.createElement('img');
+                placeholder.className = 'listing-placeholder';
+                placeholder.src = annonce.placeholder_url;
+                placeholder.alt = 'Photo d’exemple pour ' + annonce.titre;
+                photo.appendChild(placeholder);
             }
             [['swipe-badge swipe-badge-category', annonce.categorie || 'Autre'], ['swipe-badge swipe-badge-price', priceLabel], ['swipe-stamp swipe-stamp-like', 'J’aime'], ['swipe-stamp swipe-stamp-pass', 'Passe']].forEach(function (item) {
                 var badge = document.createElement('span');

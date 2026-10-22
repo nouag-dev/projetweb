@@ -10,14 +10,21 @@ CREATE TABLE ecoles (
     domaine_email VARCHAR(150) NOT NULL UNIQUE
 );
 
+CREATE TABLE ecole_domaines (
+    id_ecole INT NOT NULL REFERENCES ecoles(id_ecole) ON DELETE CASCADE,
+    domaine_email VARCHAR(150) NOT NULL,
+    PRIMARY KEY (id_ecole, domaine_email)
+);
+
 CREATE TABLE utilisateurs (
     id_utilisateur SERIAL PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     mot_de_passe VARCHAR(255) NOT NULL,
-    email_verifie BOOLEAN DEFAULT FALSE,
+    email_verifie BOOLEAN NOT NULL DEFAULT TRUE,
     id_ecole INT REFERENCES ecoles(id_ecole),
+    ecole_autre VARCHAR(150),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     photo_url VARCHAR(255),
     theme VARCHAR(10) NOT NULL DEFAULT 'clair',
@@ -28,6 +35,8 @@ CREATE TABLE utilisateurs (
     sexe VARCHAR(10),
     pays VARCHAR(100) NOT NULL DEFAULT 'France'
 );
+
+CREATE INDEX idx_utilisateurs_ville_normalisee ON utilisateurs (lower(trim(ville)));
 
 CREATE TABLE categories (
     id_categorie SERIAL PRIMARY KEY,
@@ -124,6 +133,12 @@ INSERT INTO ecoles (nom, domaine_email) VALUES
     ('ENSIL-ENSCI', 'etu-ensil.fr'),
     ('Sciences Po', 'sciencespo.fr'),
     ('HEC Paris', 'hec.edu');
+
+INSERT INTO ecole_domaines (id_ecole, domaine_email)
+SELECT id_ecole, domaine_email FROM ecoles;
+
+INSERT INTO ecole_domaines (id_ecole, domaine_email)
+SELECT id_ecole, '3il.fr' FROM ecoles WHERE domaine_email = 'etu-3il.fr';
 
 -- Catégories
 INSERT INTO categories (nom, icone) VALUES

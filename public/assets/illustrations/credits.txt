@@ -1,0 +1,21 @@
+Photos downloaded from Unsplash and used under the Unsplash License:
+https://unsplash.com/license
+
+calculatrice.jpg: https://images.unsplash.com/photo-1587145820266-a5951ee6f620
+ecran.jpg: https://images.unsplash.com/photo-1527443224154-c4a3942d3acf
+clavier.jpg: https://images.unsplash.com/photo-1587829741301-dc798b83add3
+livre.jpg: https://images.unsplash.com/photo-1544947950-fa07a98d237f
+bureau.jpg: https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd
+chaise.jpg: https://images.unsplash.com/photo-1503602642458-232111445657
+pull.jpg: https://images.unsplash.com/photo-1576566588028-4147f3842f27
+veste.jpg: https://images.unsplash.com/photo-1490481651871-ab68de25d43d
+demenagement.jpg: https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d
+cours.jpg: https://images.unsplash.com/photo-1434030216411-0b793f4b4173
+velo.jpg: https://images.unsplash.com/photo-1485965120184-e220f721d03e
+jeux-video.jpg: https://images.unsplash.com/photo-1593305841991-05c297ba4575
+musique.jpg: https://images.unsplash.com/photo-1510915361894-db8b60106cb1
+sport.jpg: https://images.unsplash.com/photo-1574629810360-7efbbe195018
+beaute.jpg: https://images.unsplash.com/photo-1596462502278-27bfdc403348
+decoration.jpg: https://images.unsplash.com/photo-1485955900006-10f4d324d411
+papeterie.jpg: https://images.unsplash.com/photo-1455390582262-044cdead277a
+sac.jpg: https://images.unsplash.com/photo-1553062407-98eeb64c6a62

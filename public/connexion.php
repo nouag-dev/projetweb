@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section class="account-intro"><p class="eyebrow">Bon retour</p><h1>Retrouve les annonces qui t'attendent.</h1><p>Connecte-toi pour publier, gérer ton profil et suivre tes échanges.</p></section>
         <section class="form-panel"><p class="eyebrow">Ton espace</p><h2>Se connecter</h2>
             <?php if ($errors !== []): ?><div class="form-errors"><?php foreach ($errors as $error): ?><p><?= e($error) ?></p><?php endforeach; ?></div><?php endif; ?>
+            <?php if (isset($_GET['verification']) && $_GET['verification'] === 'disabled'): ?><div class="success-message">La vérification par code a été supprimée. Tu peux te connecter directement.</div><?php endif; ?>
             <form method="post" class="stack-form">
                 <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="redirect" value="<?= e($redirect) ?>">
                 <label>Email<input type="email" name="email" value="<?= e($email) ?>" required autofocus></label>

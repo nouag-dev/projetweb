@@ -55,7 +55,7 @@ $favoris = $stmt->fetchAll();
                             <?php if ($annonce['photo_url'] !== null): ?>
                                 <img src="<?= e($annonce['photo_url']) ?>" alt="Photo de <?= e($annonce['titre']) ?>">
                             <?php else: ?>
-                                <span><?= e(strtoupper(substr($annonce['categorie'] ?? 'ANN', 0, 3))) ?></span>
+                                <img class="listing-placeholder" loading="lazy" decoding="async" src="<?= e(announcementPlaceholderUrl($annonce['titre'], $annonce['categorie'])) ?>" alt="Photo d’exemple pour <?= e($annonce['titre']) ?>">
                             <?php endif; ?>
                         </div>
                         <div class="listing-body">

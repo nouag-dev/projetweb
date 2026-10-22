@@ -3,3 +3,4 @@ public/uploads/*
 !public/uploads/avatars
 public/uploads/avatars/*
 !public/uploads/avatars/.gitkeep
+/vendor/

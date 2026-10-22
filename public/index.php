@@ -32,6 +32,7 @@ $pageSize = 24;
 $pageCount = 1;
 $error = null;
 $user = currentUser();
+$userCity = trim((string) ($user['ville'] ?? ''));
 
 try {
     $pdo = getConnexion();
@@ -80,10 +81,16 @@ try {
         FROM annonces a
         JOIN utilisateurs u ON u.id_utilisateur = a.id_utilisateur
         LEFT JOIN categories c ON c.id_categorie = a.id_categorie
-    SQL . $where . ' ORDER BY ' . $sortOptions[$sort] . ' LIMIT ' . $pageSize . ' OFFSET ' . $offset;
+    SQL . $where . ' ORDER BY CASE
+        WHEN :location_city = \'\' OR lower(trim(u.ville)) = lower(trim(:location_city_match)) THEN 0
+        ELSE 1
+    END, ' . $sortOptions[$sort] . ' LIMIT ' . $pageSize . ' OFFSET ' . $offset;
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($parameters);
+    $stmt->execute($parameters + [
+        'location_city' => $userCity,
+        'location_city_match' => $userCity,
+    ]);
     $annonces = $stmt->fetchAll();
 } catch (Exception $e) {
     $error = 'Une erreur est survenue lors du chargement des annonces.';
@@ -241,7 +248,7 @@ function iconForCategory(?string $icon): string
                                 <?php if ($annonce['photo_url'] !== null): ?>
                                     <img src="<?= e($annonce['photo_url']) ?>" alt="Photo de <?= e($annonce['titre']) ?>">
                                 <?php else: ?>
-                                    <span><?= e(strtoupper(substr($annonce['categorie'] ?? 'ANN', 0, 3))) ?></span>
+                                    <img class="listing-placeholder" loading="lazy" decoding="async" src="<?= e(announcementPlaceholderUrl($annonce['titre'], $annonce['categorie'])) ?>" alt="Photo d’exemple pour <?= e($annonce['titre']) ?>">
                                 <?php endif; ?>
                             </div>
                             <div class="listing-body">
